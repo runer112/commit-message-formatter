@@ -151,10 +151,10 @@ class CommitMessageFormatter {
     }
 
     if (this._subjectMode === 'split-ellipses') {
-      const firstLine = rawText.split('\n')[0];
-      const words = firstLine.split(' ');
+      const words = subjectLine.split(' ');
+      const rest = rawText.substring(subjectLine.length + 1);
       let formatted = '';
-      let rest = '';
+      let subjectRest = '';
 
       words.forEach((word, i) => {
         const prefix = i > 0 ? ' ' : '';
@@ -164,22 +164,24 @@ class CommitMessageFormatter {
         if (
           formatted.length + wordPadded.length + ellipsis.length <=
             this._subjectLength &&
-          rest === ''
+          subjectRest === ''
         ) {
           formatted += wordPadded;
         } else {
-          if (rest === '') {
+          if (subjectRest === '') {
             formatted += ellipsis;
-            rest += ellipsis + word;
+            subjectRest += ellipsis + word;
           } else {
-            rest += ' ' + word;
+            subjectRest += ' ' + word;
           }
         }
       });
 
+      const restPadded = rest.length > 0 ? '\n\n' + rest : rest;
+
       return {
         formatted,
-        rest,
+        rest: subjectRest + restPadded,
       };
     }
 
